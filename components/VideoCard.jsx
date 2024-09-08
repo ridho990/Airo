@@ -1,9 +1,11 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Image } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Video, ResizeMode } from 'expo-av';
 
 import { icons } from '../constants';
+import { useGlobalContext } from '../context/GlobalProvider';
+import { bookmarkVideo } from '../lib/appwrite';
 
 const VideoCard = ({
 	video: {
@@ -11,9 +13,29 @@ const VideoCard = ({
 		thumbnail,
 		video,
 		creator: { username, avatar },
+		$id,
+		liked,
 	},
 }) => {
+	const { user } = useGlobalContext();
 	const [play, setPlay] = useState(false);
+	const [bookmark, setBookmark] = useState(false);
+
+	const onLikedPress = () => {
+		bookmarkVideo($id, user.$id, bookmark);
+		setBookmark(!bookmark);
+	};
+
+	const isVideosBookmark = () => {
+		const userLikeVideos = liked.map((item) => item.$id);
+		setBookmark(userLikeVideos.includes(user.$id));
+	};
+
+	useEffect(() => {
+		isVideosBookmark();
+	}, []);
+
+	// console.log('test', is);
 
 	return (
 		<View className="flex flex-col items-center px-4 mb-14">
@@ -35,7 +57,14 @@ const VideoCard = ({
 					</View>
 				</View>
 
-				<View className="pt-2">
+				<View className="pt-2 flex-row gap-2">
+					<TouchableOpacity activeOpacity={0.7} onPress={onLikedPress}>
+						<Image
+							source={bookmark ? icons.loveFill : icons.loveBorder}
+							className="w-5 h-5"
+							resizeMode="contain"
+						/>
+					</TouchableOpacity>
 					<Image source={icons.menu} className="w-5 h-5" resizeMode="contain" />
 				</View>
 			</View>

@@ -13,10 +13,10 @@ import VideoCard from '../../components/VideoCard';
 import { useGlobalContext } from '../../context/GlobalProvider';
 
 const Home = () => {
-	const { user, setUser, setIsLoggedIn } = useGlobalContext();
+	const { user } = useGlobalContext();
 	const [refreshing, setRefreshing] = useState(false);
 
-	const { data: posts, refetch, isLoading } = useAppWrite(getAllPosts);
+	const { data: posts, refetch } = useAppWrite(getAllPosts);
 	const { data: latestPosts } = useAppWrite(getLatestPosts);
 
 	const onRefresh = async () => {
